@@ -1,116 +1,64 @@
 # Teste técnico backend Python pleno
 
+Instalação
+---
+1. **Executar comando para criar um docker com PostgreSQL**
+
+        docker run -p 5432:5432 -e POSTGRES_PASSWORD=1234 postgres
+2. **Acessar o banco de dados**
+       
+        docker exec -it <nome_do_banco_gerado> psql -U postgres
+        
+3. **Executar o SQL de Criação de tabela**
+
+      ```sql
+      CREATE TABLE localidades (
+        id SERIAL PRIMARY KEY,
+        cep VARCHAR(8)  NOT NULL,
+        uf VARCHAR(2)  NOT NULL,
+        localidade  VARCHAR(255) ,
+        logradouro  VARCHAR(255) ,
+        data_consulta  TIMESTAMP NOT NULL DEFAULT NOW(),
+        UNIQUE(cep)
+      );
+      ```
+4. Crie um arquivo .env com os seguintes dados
+
+        ``` 
+          HOST="localhost"
+          USER="postgres"
+          PASSWORD="1234"
+          DATABASE="postgres"
+        ```
+4. Rodar o comando uvicorn
+  
+        main:app --reload
+        
+        
+5. acessar http://localhost:8000
+  - http://localhost:8000/api/localidades/ - Lista todas as localidades cadastradas
+  - http://localhost:8000/api/localidades/?uf=PR - Lista todas as localidades daquela UF
+6. Consumir via postman utlizando metodo **"POST"** a rota: http://localhost:8000/api/localidades/82700370
+    - Ira Cadastrar no banco de dados a localidade selecionada
+
+
+Documentação
 ---
 
-Neste repositório você encontra o teste técnico para a vaga de Desenvolvedor(a) Python pleno
-da [Sales Sense](http://salessense.com.br)!
-Você provavelmente chegou aqui através da indicação da empresa após passar pelas outras etapas do processo seletivo.
-Se este não for o seu caso e mesmo assim você implementar alguma solução para este exercício, ele não será avaliado.
+Acessar - http://localhost:8000/docs
 
-Você deverá efetuar um fork deste repositório em seu Github, e terá o prazo de três (03) dias para conclusão.
-Após a conclusão, informar a equipe da Sales Sense que contatou você para ser feita a avaliação. 
-
+Dependências
 ---
 
-### PROBLEMA
+- fastapi
+  - FastAPI é um moderno e rápido (alta performance) framework web para construção de APIs com Python 3.6 ou superior, baseado nos type hints padrões do Python.
 
-A empresa Análise de Dados Sense Inc tem trabalhado para popular uma base de dados global para seus clientes.
+- requests
+  - Biblioteca HTTP para a linguagem de programação Python.
 
-Atualmente eles necessitam de informacoes de endereços e cidades para utlizar em relatórios de geolocalização dos clientes.
+- dotenv
+  - O Dotenv é um pacote para gerenciar as variáveis de ambiente
+  
+- uvicorn
+  -  O Uvicorn faz o trabalho de subir o servidor para acessarmos as rotas. 
 
----
-
-### SOLUÇÃO
-
-Para auxiliar a Sense Inc, você deve desenvolver uma API que consulte e grave em uma tabela do banco de dados
-as informações do endereço de um determinado CEP que será recebido pela sua API.
-
-Para isso, foram passados alguns requisitos técnicos:
-
-* A API deve ser desenvolvida em Python utilizando um dos seguintes Frameworks web de sua preferencia:
-    * FastAPI;
-    * Flask;
-    * Django.
-* Deve possuir um endpoint que receba um CEP, efetue a consulta no ViaCep e cadastre no banco 
-* Deve utilizar a API [ViaCEP](https://viacep.com.br) para consultar um Cep recebido
-* Utilizar banco de dados PostgreSQL em Docker para gravar as seguintes informacoes:
-    * Cep consultado
-    * UF
-    * Localidade
-    * Logradouro
-    * Data e hora da consulta
-* Deve possuir um endpoint para consultar todos os CEPs ja cadastrados no banco de dados
-
-```
-GET /api/localidades/
-```
-
-Esse endpoint deverá apresentar os dados no seguinte formato:
-
-```json
- {
-  "localidades": [
-    {
-      "cep": "01001-000",
-      "uf": "SP",
-      "localidade": "São Paulo",
-      "logradouro": "Praça da Sé",
-      "data_consulta": "2023-01-11T17:36:13Z"
-    },
-    {
-      "cep": "32310-210",
-      "uf": "MG",
-      "localidade": "Contagem",
-      "logradouro": "Avenida José Faria da Rocha",
-      "data_consulta": "2023-01-10T12:14:25Z"
-    }
-  ]
-}
-```
-
-O endpoint deverá possuir um parametro opcional para filtrar somente as localidades de uma determinada UF:
-
-
-```
-GET /api/localidades/?uf=SP
-```
-
-Neste exemplo o endpoint deverá apresentar os dados no seguinte formato:
-
-```json
- {
-  "localidades": [
-    {
-      "cep": "01001-000",
-      "uf": "SP",
-      "localidade": "São Paulo",
-      "logradouro": "Praça da Sé",
-      "data_consulta": "2023-01-11T17:36:13Z"
-    }
-  ]
-}
-```
-
-Alguns exemplos de CEP:
-* 89110-110
-* 97542-460
-* 88010-907
-* 49075-975
-
-
----
-
-### AVALIAÇÃO
-
-Iremos seguir as orientações que estiverem no README.md do seu fork para subir o projeto e efetuar os testes.
-
-Serão avaliados os seguintes pontos:
-* Organização do projeto;
-* Legibilidade do código;
-* Boas práticas de programação;
-* Se as funcionalidades descritas nos requisitos técnicos estão funcionando.
-
-
-### PRAZO
-
-3 dias a partir da data combinada para aplicação do teste.
