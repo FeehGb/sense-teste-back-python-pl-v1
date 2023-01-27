@@ -1,0 +1,5 @@
+sqlalchemy
+requests
+fastapi
+fastapi-utils
+uvicorn

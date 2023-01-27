@@ -1,50 +1,20 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from .config import settings
 
+SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOSTNAME}:{settings.DATABASE_PORT}/{settings.POSTGRES_DB}"
 
-import psycopg2
-import psycopg2.extras
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-class Database:
-    def __init__(self, host:str, user:str, password:str, database:str):
-        self.connection = psycopg2.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=database
-        )
-        self.cursor = self.connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
-    
+Base = declarative_base()
 
-             
-    def select(self, table:str = '', fields:list = [], where:dict = []):
-        if not fields:
-            fields =['*']
-        where_query = '' 
-        if where :
-            where_query = 'AND '+' AND '.join(f"{key} = '{value}'" for key, value in where.items())
-            
-        sql = f"SELECT {','.join(fields)} FROM {table} WHERE 1=1 {where_query}"
-        self.cursor.execute(sql)
-        return self.cursor.fetchall()
-    
-
-    def insert(self, table:str, data:dict):
-        columns = ', '.join(data.keys())
-        values = ', '.join("'" + str(v) + "'" for v in data.values())
-        self.cursor.execute(f"INSERT INTO {table} ({columns}) VALUES ({values})")
-        self.connection.commit()
-    
-    def delete(self, table:str, where:dict = {})-> bool:
-        where_query = ''
-        if where :
-            where_query = 'AND '+' AND '.join(f"{key} = '{value}'" for key, value in where.items())
-            
-        sql = f"DELETE FROM {table} WHERE 1=1 {where_query}"
-        self.cursor.execute(sql)
-        self.connection.commit()
-    
-        return self.cursor.rowcount >= 1
-    
-
-    def close(self):
-        self.cursor.close()
-        self.connection.close()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

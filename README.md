@@ -1,39 +1,27 @@
 # Teste técnico backend Python pleno
 
-Instalação
+Instalação e Execução
 ---
-1. **Executar comando para criar um docker com PostgreSQL**
+1. **INSTALAR DEPENDENCIAS**
 
-        docker run -p 5432:5432 -e POSTGRES_PASSWORD=1234 postgres
-2. **Acessar o banco de dados**
+        pip install -r .\requirements.txt --user
+2. **Rodar arquivo docker-compose.yml**
        
-        docker exec -it <nome_do_banco_gerado> psql -U postgres
-        
-3. **Executar o SQL de Criação de tabela**
+        docker-compose up -d  
+2. **Crie seu arquivo .env com as seguintes configurações**
 
-      ```sql
-      CREATE TABLE localidades (
-        id SERIAL PRIMARY KEY,
-        cep VARCHAR(8)  NOT NULL,
-        uf VARCHAR(2)  NOT NULL,
-        localidade  VARCHAR(255) ,
-        logradouro  VARCHAR(255) ,
-        data_consulta  TIMESTAMP NOT NULL DEFAULT NOW(),
-        UNIQUE(cep)
-      );
-      ```
-4. Crie um arquivo .env com os seguintes dados
-
-        ``` 
-          HOST="localhost"
-          USER="postgres"
-          PASSWORD="1234"
-          DATABASE="postgres"
-        ```
-4. Rodar o comando uvicorn
-  
-        main:app --reload
+        DATABASE_PORT=6500
+        POSTGRES_PASSWORD=1234
+        POSTGRES_USER=postgres
+        POSTGRES_DB=fastapi
+        POSTGRES_HOST=postgres
+        POSTGRES_HOSTNAME=127.0.0.1
+        CLIENT_ORIGIN=http://localhost:3000
         
+        
+3. **Executar projeto**
+
+      uvicorn app.main:app --host localhost --port 8000 --reload    
         
 5. acessar http://localhost:8000
   - http://localhost:8000/api/localidades/ - Lista todas as localidades cadastradas
@@ -47,18 +35,4 @@ Documentação
 
 Acessar - http://localhost:8000/docs
 
-Dependências
----
-
-- fastapi
-  - FastAPI é um moderno e rápido (alta performance) framework web para construção de APIs com Python 3.6 ou superior, baseado nos type hints padrões do Python.
-
-- requests
-  - Biblioteca HTTP para a linguagem de programação Python.
-
-- dotenv
-  - O Dotenv é um pacote para gerenciar as variáveis de ambiente
-  
-- uvicorn
-  -  O Uvicorn faz o trabalho de subir o servidor para acessarmos as rotas. 
 
